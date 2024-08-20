@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Player Screen
+{% endblock %}
+
+{% block content %}
+<script src="https://unpkg.com/wavesurfer.js"></script>
+<style>
+    .player-container {
+        margin: auto;
+        text-align: center;
+        max-width: 800px;
+        background-color: #1a202c;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .waveform {
+        margin-bottom: 20px;
+    }
+    .controls button {
+        background-color: #4F46E5;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        margin: 0 10px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .controls button:disabled {
+        background-color: #6b7280;
+    }
+</style>
+<body class="bg-gray-900 text-white">
+
+    <div class="player-container">
+        <h1 class="text-5xl font-extrabold text-center text-indigo-400 mb-12">{{ audio.album_title }}</h1>
+    
+        <div class="flex items-center justify-center">
+            <img class="w-72 h-48 object-cover object-center rounded mb-4" alt="hero" src="{{ albums.cover_image.url }}">
+        </div>
+
+        <h2 class="text-2xl font-semibold mb-6">{{ audio.song_title }}</h2> 
+        
+        <div id="waveform" class="waveform"></div>
+        
+        <div class="controls">
+            <button id="playPauseBtn"><i class="fas fa-play"></i></button>
+            <button id="rewindBtn">⏪ 10s</button>
+            <button id="fastForwardBtn">⏩ 10s</button>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            var $playPauseBtn = $('#playPauseBtn');
+            var $rewindBtn = $('#rewindBtn');
+            var $fastForwardBtn = $('#fastForwardBtn');
+        
+            // Initialize WaveSurfer
+            var wavesurfer = WaveSurfer.create({
+                container: '#waveform',
+                waveColor: '#A3BFFA',
+                progressColor: '#4F46E5',
+                cursorColor: '#4F46E5',
+                barWidth: 3,
+                height: 100,
+                responsive: true
+            });
+        
+            // Load the audio file
+            wavesurfer.load('{{ audio.song.url }}');
+        
+            // Toggle play/pause
+            $playPauseBtn.on('click', function() {
+                wavesurfer.playPause();
+                $(this).html(wavesurfer.isPlaying() ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>');
+            });
+        
+            // Rewind by 10 seconds
+            $rewindBtn.on('click', function() {
+                var currentTime = wavesurfer.getCurrentTime();
+                var duration = wavesurfer.getDuration();
+                wavesurfer.seekTo(Math.max(0, currentTime - 10) / duration);
+            });
+        
+            // Fast-forward by 10 seconds
+            $fastForwardBtn.on('click', function() {
+                var currentTime = wavesurfer.getCurrentTime();
+                var duration = wavesurfer.getDuration();
+                wavesurfer.seekTo(Math.min(duration, currentTime + 10) / duration);
+            });
+        });
+        </script>
+        
+{% endblock %}
