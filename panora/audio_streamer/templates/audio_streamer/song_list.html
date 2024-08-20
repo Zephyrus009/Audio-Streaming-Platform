@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Album Page
+{% endblock %}
+
+{% block content %}
+<section class="text-gray-400 bg-gray-900 body-font">
+    <div class="container px-5 py-24 mx-auto">
+        <div class="flex flex-col text-center w-full mb-20">
+            <div class="flex items-center justify-center">
+                <img class="w-72 h-48 object-cover object-center rounded" alt="hero" src="{{ albums.cover_image.url }}">
+            </div>
+            <br>
+            <br>
+            <div class="flex items-center justify-center">
+                <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-white album_title" data-title="{{ albums.album_title }}">{{ albums.album_title }}</h1>
+            </div>
+        </div>
+        <div class="lg:w-2/3 w-full mx-auto overflow-auto">
+            <form action="{% url 'audio_streamer:panora_player' %}" method="post" class="album-form">
+                {% csrf_token %}
+                <table class="table-auto w-full text-left whitespace-no-wrap">
+                    <thead>
+                        <tr>
+                            <th class="px-4 py-3 title-font tracking-wider font-medium text-white text-sm bg-gray-800 rounded-tl rounded-bl">Songs</th>
+                            <th class="px-4 py-3 title-font tracking-wider font-medium text-white text-sm bg-gray-800">Play</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for album_song in album_songs %}
+                        <tr>
+                            <td class="px-4 py-3">
+                                <button type="button" class="song-class text-white" data-title="{{ album_song.song_title }}">{{ album_song.song_title }}</button>
+                            </td>
+                            <td class="px-4 py-3">
+                                <button type="button" class="play-class text-white" data-title="{{ album_song.song_title }}">▶️</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <input type="hidden" name="album_title" id="albumTitleInput">
+                <input type="hidden" name="song_name" id="songNameInput">
+            </form>
+        </div>
+    </div>
+</section>
+<script>
+  $(document).ready(function(){
+    $(".song-class, .play-class").on('click', function(){
+        var album_title = $('.album_title').data('title');
+        var song_title = $(this).data('title');
+        $('#albumTitleInput').val(album_title);
+        $('#songNameInput').val(song_title);
+        $('.album-form').submit();
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Panora Home
+{% endblock  %}
+
+{% block content %}
+<section class="text-gray-400 bg-gray-900 body-font">
+    <div class = "flex ml-6 mt-10">
+        <h1 class="text-white text-3xl title-font font-medium mb-1 items-end">Soulful Songs</h1>
+    </div>
+    <form action="{% url 'audio_streamer:panora_album_list'%}" id = "album-form" method = "post">
+        {% csrf_token %}
+        <div class="container px-5 py-24 mx-auto -mt-12">
+            <div class="flex flex-wrap -m-4">
+            {% for album in albums %}
+                <div class="lg:w-1/4 md:w-1/2 p-4 w-full album-card" data-title = "{{album.album_title}}">
+                <a class="block relative h-48 rounded overflow-hidden">
+                    <img alt="ecommerce" class="object-cover object-center w-full h-full block" src="{{album.cover_image.url}}">
+                </a>
+                <div class="mt-4">
+                    <h3 class="text-gray-500 text-xs tracking-widest title-font mb-1">ALBUM</h3>
+                    <h2 class="text-white title-font text-lg font-medium" name = "album_title">{{album.album_title}}</h2>
+                </div>
+                </div>
+            {% endfor %}
+            </div>
+            <input type="hidden" name = "album_title" id = "albumTitleInput">
+        </div>
+    </form>
+  </section>
+  <script>
+    $(document).ready(function(){
+        $('.album-card').on('click',function(){
+            var albumTitle = $(this).data('title');
+            $('#albumTitleInput').val(albumTitle);
+            $('#album-form').submit();
+        })
+    })
+  </script>
+{% endblock %}
+
